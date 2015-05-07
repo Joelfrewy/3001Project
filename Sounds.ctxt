@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.params=type\ play
+comment0.target=Sounds(Sounds.Sound,\ boolean)
+comment1.params=type
+comment1.target=void\ play(Sounds.Sound)
+comment2.params=doLoop
+comment2.target=void\ loop(boolean)
+comment3.params=type\ play
+comment3.target=void\ playSound(Sounds.Sound,\ boolean)
+numComments=4
