@@ -7,6 +7,12 @@
  */
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 
 public class Ghost
 {
@@ -239,10 +245,11 @@ public class Ghost
                     case CHASE:
                     if(GhostTarget == Target.PACMAN){
                         //follow pacman
-                        GhostOrientation = targetDirection(maze.getPacMan().getPosition(), maze);
+                        //GhostOrientation = targetDirection(maze.getPacMan().getPosition(), maze);
+                    	GhostOrientation = targetDirection(targetPoint(maze), maze);
                     } else {
                         //offset
-                        GhostOrientation = targetDirection(offset(maze.getPacMan().getPosition(),maze.getPacMan().getOrientation()), maze);
+                        GhostOrientation = targetDirection(targetPoint(maze), maze);
                     }
                 }
             }
@@ -335,6 +342,100 @@ public class Ghost
                 position.translate(dist,0); break;
         }
         return position;
+    }
+    
+    private float utility(Maze maze, Point point, Point ghostpoint){
+    	float d = distance(ghostpoint, point) - distance(maze.getPacMan().getPosition(), point);
+    	if(d < 0)
+    		return Float.MAX_VALUE;
+    	else
+    		return d;
+    }
+    
+    private Point targetPoint(Maze maze){
+		Queue<Point> intqueue = new LinkedList<Point>();
+		intqueue.addAll(getIntersections(maze, maze.getPacMan().getPosition()));
+		ArrayList<Point> visited = new ArrayList<Point>();
+		List<List<Float>> utilities = new ArrayList<List<Float>>();
+		ArrayList<Point> targets = new ArrayList<Point>();
+		targets.addAll(intqueue);
+		int i = 0;
+		while(!intqueue.isEmpty()){
+			System.out.println("loop1");
+			Point currentpoint = intqueue.remove();
+			visited.add(currentpoint);
+			utilities.add(new ArrayList<Float>());
+			boolean expand = false;
+			for(int g = 0; g<4 ;g++){
+				float u = utility(maze, currentpoint, maze.getGhosts()[g].GhostPosition);
+				utilities.get(i).add(u);
+				if(u > 100000){expand = true;}
+			}
+			if(expand || (intqueue.isEmpty() && i<3)){
+				targets.addAll(getIntersections(maze, currentpoint));
+				intqueue.addAll(targets);
+				intqueue.removeAll(visited);
+				targets.remove(currentpoint);
+			}
+			i++;
+		}
+		
+		Point[] ghosttargets = new Point[4];
+		for(int g = 0;g<4;g++){
+			float best = Float.MAX_VALUE;
+			int chosen = 0;
+			for(int j = 0;j<targets.size();j++){
+				if(best > utilities.get(j).get(g)){
+					best = utilities.get(j).get(g);
+					ghosttargets[g] = targets.get(j);
+					chosen = j;
+				}
+			}
+			for(int p = g; p<4;p++){
+				utilities.get(chosen).set(p, Float.MAX_VALUE);
+			}
+		}
+		System.out.println(ghosttargets[0].toString());
+		System.out.println(ghosttargets[1].toString());
+		System.out.println(ghosttargets[2].toString());
+		System.out.println(ghosttargets[3].toString() + "/n");
+		for(int g = 0;g<4;g++){
+			if(maze.getGhosts()[g].equals(this)){
+				return ghosttargets[g];
+			}
+		}
+		return null;
+    }
+    
+    private int distance(Point point1, Point point2){
+    	return Math.abs(point1.x-point2.x) + Math.abs(point1.y-point2.y);
+    }
+    
+    private ArrayList<Point> getIntersections(Maze maze, Point point){
+		ArrayList<Point> intersections = new ArrayList<Point>();
+    	Maze.Status[][] grid = maze.getMap();
+		Queue<Point> pointqueue = new LinkedList<Point>();
+		pointqueue.add(point);
+		ArrayList<Point> visited = new ArrayList<Point>();
+		while(!pointqueue.isEmpty()){
+			int paths = 0;
+			Point currentpoint = pointqueue.remove();
+			System.out.println(currentpoint.toString());
+			visited.add(currentpoint);
+			ArrayList<Point> validpaths = new ArrayList<Point>();
+			if(grid[currentpoint.x/MazeViewer.CELL_SIZE+1][currentpoint.y/MazeViewer.CELL_SIZE] != Maze.Status.INVALID){validpaths.add(new Point(currentpoint.x+MazeViewer.CELL_SIZE,currentpoint.y));paths++;}
+			if(grid[currentpoint.x/MazeViewer.CELL_SIZE-1][currentpoint.y/MazeViewer.CELL_SIZE] != Maze.Status.INVALID){validpaths.add(new Point(currentpoint.x-MazeViewer.CELL_SIZE,currentpoint.y));paths++;}
+			if(grid[currentpoint.x/MazeViewer.CELL_SIZE][currentpoint.y/MazeViewer.CELL_SIZE+1] != Maze.Status.INVALID){validpaths.add(new Point(currentpoint.x,currentpoint.y+MazeViewer.CELL_SIZE));paths++;}
+			if(grid[currentpoint.x/MazeViewer.CELL_SIZE][currentpoint.y/MazeViewer.CELL_SIZE-1] != Maze.Status.INVALID){validpaths.add(new Point(currentpoint.x,currentpoint.y-MazeViewer.CELL_SIZE));paths++;}
+			if(paths > 2 && !currentpoint.equals(point)){
+				intersections.add(currentpoint);
+			}
+			else{
+				validpaths.remove(visited);
+				pointqueue.addAll(validpaths);
+			}
+		}
+    	return intersections;
     }
     
     private Point nextPos2(Point positioncopy, Orientation ori){
