@@ -460,7 +460,7 @@ public class Ghost
     private ArrayList<Point> getIntersections(Maze maze, Point point){
     	for(int g = 0;g<maze.getMap()[0].length;g++){
     		for(int a = 0;a<maze.getMap().length;a++){
-        		System.out.print(maze.getMap()[a][g] + "  ");
+        		System.out.print(maze.getMap()[a][g].toString().charAt(2) + "\t");
         	}
     		System.out.println("");
     	}
@@ -500,6 +500,10 @@ public class Ghost
 				intersections.add(new Point(x*MazeViewer.CELL_SIZE,y*MazeViewer.CELL_SIZE));
 			}
 		}
+		intersections.add(new Point(2,5));
+		intersections.add(new Point(2,5));
+		intersections.add(new Point(2,5));
+		intersections.add(new Point(2,5));
     	return intersections;
     }
     

@@ -460,7 +460,7 @@ public class Ghost
     private ArrayList<Point> getIntersections(Maze maze, Point point){
     	for(int g = 0;g<maze.getMap()[0].length;g++){
     		for(int a = 0;a<maze.getMap().length;a++){
-        		System.out.print(maze.getMap()[a][g] + "  ");
+        		System.out.print(maze.getMap()[a][g] + "\t");
         	}
     		System.out.println("");
     	}

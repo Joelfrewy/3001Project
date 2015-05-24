@@ -394,6 +394,12 @@ public class Ghost
     }
     
     private Point targetPoint(Maze maze){
+    	for(int g = 0;g<maze.getMap()[0].length;g++){
+    		for(int a = 0;a<maze.getMap().length;a++){
+        		System.out.print(maze.getMap()[a][g] + " ");
+        	}
+    		System.out.println("");
+    	}
 		Queue<Point> intqueue = new LinkedList<Point>();
 		intqueue.addAll(getIntersections(maze, maze.getPacMan().getPosition()));
 		ArrayList<Point> visited = new ArrayList<Point>();
@@ -458,48 +464,47 @@ public class Ghost
     }
     
     private ArrayList<Point> getIntersections(Maze maze, Point point){
-    	for(int g = 0;g<maze.getMap()[0].length;g++){
-    		for(int a = 0;a<maze.getMap().length;a++){
-        		System.out.print(maze.getMap()[a][g] + "  ");
-        	}
-    		System.out.println("");
-    	}
-    	int[] start = {point.x/MazeViewer.CELL_SIZE, point.y/MazeViewer.CELL_SIZE};
-    	Queue<int[]> pointqueue = new LinkedList<int[]>();
-    	pointqueue.add(start);
-    	Maze.Status[][] statuses = maze.getMap();
-    	int[][] visited = new int[statuses.length][statuses[0].length];
+    	
 		ArrayList<Point> intersections = new ArrayList<Point>();
-		while(!pointqueue.isEmpty() && intersections.size() < 5){
-			int[] current = pointqueue.remove();
-			int x = current[0];
-			int y = current[1];
-			visited[x][y] = 1;
-			int path = 0;
-			if(statuses[x-1][y] != Maze.Status.DEAD && visited[x+1][y] != 1){
-				int[] newpoint = {x-1,y};
-				pointqueue.add(newpoint);
-				path++;
+		Queue<Point> pointqueue = new LinkedList<Point>();
+		pointqueue.add(point);
+		ArrayList<Point> visited = new ArrayList<Point>();
+		int f = 1;
+		while(!pointqueue.isEmpty()){
+			Point currentpoint = pointqueue.remove();
+			visited.add(currentpoint);
+			ArrayList<Point> validpaths = new ArrayList<Point>();
+			Point pright = new Point(currentpoint.x+MazeViewer.CELL_SIZE, currentpoint.y);
+			Point pleft = new Point(currentpoint.x-MazeViewer.CELL_SIZE, currentpoint.y);
+			Point pup = new Point(currentpoint.x, currentpoint.y+MazeViewer.CELL_SIZE);
+			Point pdown = new Point(currentpoint.x, currentpoint.y-MazeViewer.CELL_SIZE);
+			
+			if(!maze.locationStatus(pleft).equals(Maze.Status.INVALID))
+				{validpaths.add(pleft);
+			System.out.println("add left" + f);}
+			if(!maze.locationStatus(pright).equals(Maze.Status.INVALID))
+				{validpaths.add(pright);
+			System.out.println("add right" + f);}
+			if(!maze.locationStatus(pup).equals(Maze.Status.INVALID))
+				{validpaths.add(pup);
+			System.out.println("add up" + f);}
+			if(!maze.locationStatus(pdown).equals(Maze.Status.INVALID))
+				{validpaths.add(pdown);
+			System.out.println("add down" + f);}
+			if(validpaths.size() > 2 && !currentpoint.equals(point)){
+				intersections.add(currentpoint);
 			}
-			if(statuses[x][y+1] != Maze.Status.DEAD && visited[x+1][y] != 1){
-				int[] newpoint = {x,y+1};
-				pointqueue.add(newpoint);
-				path++;
+			else{
+				validpaths.remove(visited);
+				pointqueue.addAll(validpaths);
 			}
-			if(statuses[x][y-1] != Maze.Status.DEAD && visited[x+1][y] != 1){
-				int[] newpoint = {x,y-1};
-				pointqueue.add(newpoint);
-				path++;
-			}
-			if(statuses[x+1][y] != Maze.Status.DEAD && visited[x+1][y] != 1){
-				int[] newpoint = {x+1,y};
-				pointqueue.add(newpoint);
-				path++;
-			}
-			if(path > 1){
-				intersections.add(new Point(x*MazeViewer.CELL_SIZE,y*MazeViewer.CELL_SIZE));
-			}
+			f++;
 		}
+		System.out.println("---");
+		for(Point i:intersections){
+			System.out.println(i.x/MazeViewer.CELL_SIZE +", "+ i.y/MazeViewer.CELL_SIZE);
+		}
+		System.out.println("---");
     	return intersections;
     }
     

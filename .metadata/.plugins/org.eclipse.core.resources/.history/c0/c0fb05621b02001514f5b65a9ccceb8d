@@ -394,6 +394,12 @@ public class Ghost
     }
     
     private Point targetPoint(Maze maze){
+    	for(int g = 0;g<maze.getMap()[0].length;g++){
+    		for(int a = 0;a<maze.getMap().length;a++){
+        		System.out.print(maze.getMap()[a][g] + " ");
+        	}
+    		System.out.println("");
+    	}
 		Queue<Point> intqueue = new LinkedList<Point>();
 		intqueue.addAll(getIntersections(maze, maze.getPacMan().getPosition()));
 		ArrayList<Point> visited = new ArrayList<Point>();
@@ -458,48 +464,12 @@ public class Ghost
     }
     
     private ArrayList<Point> getIntersections(Maze maze, Point point){
-    	for(int g = 0;g<maze.getMap()[0].length;g++){
-    		for(int a = 0;a<maze.getMap().length;a++){
-        		System.out.print(maze.getMap()[a][g] + "  ");
-        	}
-    		System.out.println("");
-    	}
-    	int[] start = {point.x/MazeViewer.CELL_SIZE, point.y/MazeViewer.CELL_SIZE};
-    	Queue<int[]> pointqueue = new LinkedList<int[]>();
-    	pointqueue.add(start);
     	Maze.Status[][] statuses = maze.getMap();
-    	int[][] visited = new int[statuses.length][statuses[0].length];
 		ArrayList<Point> intersections = new ArrayList<Point>();
-		while(!pointqueue.isEmpty() && intersections.size() < 5){
-			int[] current = pointqueue.remove();
-			int x = current[0];
-			int y = current[1];
-			visited[x][y] = 1;
-			int path = 0;
-			if(statuses[x-1][y] != Maze.Status.DEAD && visited[x+1][y] != 1){
-				int[] newpoint = {x-1,y};
-				pointqueue.add(newpoint);
-				path++;
-			}
-			if(statuses[x][y+1] != Maze.Status.DEAD && visited[x+1][y] != 1){
-				int[] newpoint = {x,y+1};
-				pointqueue.add(newpoint);
-				path++;
-			}
-			if(statuses[x][y-1] != Maze.Status.DEAD && visited[x+1][y] != 1){
-				int[] newpoint = {x,y-1};
-				pointqueue.add(newpoint);
-				path++;
-			}
-			if(statuses[x+1][y] != Maze.Status.DEAD && visited[x+1][y] != 1){
-				int[] newpoint = {x+1,y};
-				pointqueue.add(newpoint);
-				path++;
-			}
-			if(path > 1){
-				intersections.add(new Point(x*MazeViewer.CELL_SIZE,y*MazeViewer.CELL_SIZE));
-			}
-		}
+		intersections.add(new Point(2,5));
+		intersections.add(new Point(2,5));
+		intersections.add(new Point(2,5));
+		intersections.add(new Point(2,5));
     	return intersections;
     }
     
