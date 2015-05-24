@@ -238,9 +238,8 @@ public class Ghost
                     
                     case SCATTER: 
                     //follow scatter target
-                    //Point target = new Point (GhostScatterTarget[0], GhostScatterTarget[1]);
-                    //GhostOrientation = targetDirection(target, maze, true);
-                    	GhostOrientation = targetDirection(targetPoint(maze), maze);
+                    Point target = new Point (GhostScatterTarget[0], GhostScatterTarget[1]);
+                    GhostOrientation = targetDirection(target, maze, true);
                     break;
                     
                     case CHASE:
@@ -419,7 +418,7 @@ public class Ghost
 		pointqueue.add(point);
 		ArrayList<Point> visited = new ArrayList<Point>();
 		while(!pointqueue.isEmpty()){
-			System.out.println("1");
+			int paths = 0;
 			Point currentpoint = pointqueue.remove();
 			System.out.println(currentpoint.toString());
 			visited.add(currentpoint);

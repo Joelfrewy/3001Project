@@ -197,6 +197,16 @@ public class Ghost
         return canx && cany;
     }
     
+    private boolean collided(PacMan pacman){
+    	return (GhostPosition.x == pacman.getPosition().x && GhostPosition.y == pacman.getPosition().y || 
+    	        
+    	        Math.abs(GhostPosition.x - pacman.getPosition().x)== 1 && GhostPosition.y == pacman.getPosition().y ||
+    	        GhostPosition.x == pacman.getPosition().x && Math.abs(GhostPosition.y - pacman.getPosition().y) == 1 || 
+    	        
+    	        Math.abs(GhostPosition.x - pacman.getPosition().x)== 2 && GhostPosition.y == pacman.getPosition().y ||
+    	        GhostPosition.x == pacman.getPosition().x && Math.abs(GhostPosition.y - pacman.getPosition().y) == 2 ) && !dead
+    }
+    
     public void move(Maze maze){
         //automatically moves the ghost in the user specified maze to the next position with proper orientation.
         boolean doMove = false;
@@ -205,14 +215,7 @@ public class Ghost
         
         //conditions to collide
         
-        if((GhostPosition.x == pacman.getPosition().x && GhostPosition.y == pacman.getPosition().y || 
-        
-        Math.abs(GhostPosition.x - pacman.getPosition().x)== 1 && GhostPosition.y == pacman.getPosition().y ||
-        GhostPosition.x == pacman.getPosition().x && Math.abs(GhostPosition.y - pacman.getPosition().y) == 1 || 
-        
-        Math.abs(GhostPosition.x - pacman.getPosition().x)== 2 && GhostPosition.y == pacman.getPosition().y ||
-        GhostPosition.x == pacman.getPosition().x && Math.abs(GhostPosition.y - pacman.getPosition().y) == 2 ) && !dead){
-            
+        if(collided(pacman)){
             maze.doCollide(isPanic(), GhostPosition);
             if(isPanic()){
                 dead = true;
@@ -420,6 +423,8 @@ public class Ghost
 		ArrayList<Point> visited = new ArrayList<Point>();
 		while(!pointqueue.isEmpty()){
 			System.out.println("1");
+			if()
+			int paths = 0;
 			Point currentpoint = pointqueue.remove();
 			System.out.println(currentpoint.toString());
 			visited.add(currentpoint);

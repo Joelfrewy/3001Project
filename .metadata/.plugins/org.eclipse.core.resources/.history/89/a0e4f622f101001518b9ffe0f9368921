@@ -420,6 +420,8 @@ public class Ghost
 		ArrayList<Point> visited = new ArrayList<Point>();
 		while(!pointqueue.isEmpty()){
 			System.out.println("1");
+			if()
+			int paths = 0;
 			Point currentpoint = pointqueue.remove();
 			System.out.println(currentpoint.toString());
 			visited.add(currentpoint);

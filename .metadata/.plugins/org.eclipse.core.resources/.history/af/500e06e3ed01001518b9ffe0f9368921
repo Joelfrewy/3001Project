@@ -238,9 +238,8 @@ public class Ghost
                     
                     case SCATTER: 
                     //follow scatter target
-                    //Point target = new Point (GhostScatterTarget[0], GhostScatterTarget[1]);
-                    //GhostOrientation = targetDirection(target, maze, true);
-                    	GhostOrientation = targetDirection(targetPoint(maze), maze);
+                    Point target = new Point (GhostScatterTarget[0], GhostScatterTarget[1]);
+                    GhostOrientation = targetDirection(target, maze, true);
                     break;
                     
                     case CHASE:
@@ -414,36 +413,32 @@ public class Ghost
     
     private ArrayList<Point> getIntersections(Maze maze, Point point){
 		ArrayList<Point> intersections = new ArrayList<Point>();
-    	Maze.Status[][] grid = maze.getMap();
 		Queue<Point> pointqueue = new LinkedList<Point>();
 		pointqueue.add(point);
 		ArrayList<Point> visited = new ArrayList<Point>();
 		while(!pointqueue.isEmpty()){
-			System.out.println("1");
 			Point currentpoint = pointqueue.remove();
 			System.out.println(currentpoint.toString());
 			visited.add(currentpoint);
+			ArrayList<Point> paths = new ArrayList<Point>();
 			ArrayList<Point> validpaths = new ArrayList<Point>();
-			Point pright = new Point(currentpoint.x+MazeViewer.CELL_SIZE, currentpoint.y);
-			Point pleft = new Point(currentpoint.x-MazeViewer.CELL_SIZE, currentpoint.y);
-			Point pup = new Point(currentpoint.x, currentpoint.y+MazeViewer.CELL_SIZE);
-			Point pdown = new Point(currentpoint.x, currentpoint.y-MazeViewer.CELL_SIZE);
-			
-			if(maze.locationStatus(pleft) != Maze.Status.INVALID)
-				validpaths.add(pleft);
-			if(maze.locationStatus(pright) != Maze.Status.INVALID)
-				validpaths.add(pright);
-			if(maze.locationStatus(pup) != Maze.Status.INVALID)
-				validpaths.add(pup);
-			if(maze.locationStatus(pdown) != Maze.Status.INVALID)
-				validpaths.add(pdown);
-			if(validpaths.size() > 2 && !currentpoint.equals(point)){
-				intersections.add(currentpoint);
+			paths.add(new Point(currentpoint.x+MazeViewer.CELL_SIZE, currentpoint.y));
+			paths.add(new Point(currentpoint.x-MazeViewer.CELL_SIZE, currentpoint.y));
+			paths.add(new Point(currentpoint.x, currentpoint.y+MazeViewer.CELL_SIZE));
+			paths.add(new Point(currentpoint.x, currentpoint.y-MazeViewer.CELL_SIZE));
+			for(Point p: paths){
+				if(maze.locationStatus(p) != Maze.Status.INVALID){
+					validpaths.add(p);		
+				}
+				if(validpaths.size() > 2 && !currentpoint.equals(point)){
+					intersections.add(currentpoint);
+				}
+				else{
+					validpaths.remove(visited);
+					pointqueue.addAll(validpaths);
+				}
 			}
-			else{
-				validpaths.remove(visited);
-				pointqueue.addAll(validpaths);
-			}
+			System.out.println(currentpoint);
 		}
     	return intersections;
     }
