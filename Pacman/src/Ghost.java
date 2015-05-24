@@ -8,6 +8,7 @@
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -346,30 +347,72 @@ public class Ghost
     }
     
     private float utility(Maze maze, Point point, Point ghostpoint){
-    	float d = distance(ghostpoint, point) - distance(maze.getPacMan().getPosition(), point);
-    	if(d < 0)
-    		return Float.MAX_VALUE;
+    	/*Maze.Status[][] grid = maze.getMap();
+    	int length = grid.length;
+    	int width = grid[0].length;
+    	ArrayList<Point> energisers = new ArrayList<Point>(); 
+    	for(int i = 0; i< length;i++){
+    		for(int j = 0; j< width;j++){
+        		if(grid[i][j] == Maze.Status.ENERGISER){
+        			energisers.add(new Point(i*MazeViewer.CELL_SIZE, j*MazeViewer.CELL_SIZE));
+        		}
+        	}
+    	}
+    	Point closest = energisers.get(0);
+    	int minedist = 2000;
+    	for(Point e: energisers){
+    		if(minedist > distance(maze.getPacMan().getPosition(), e)){
+    			minedist = distance(maze.getPacMan().getPosition(), e);
+    			closest = e;
+    		}
+    	}
+    	int mindist = 2000;
+    	for(Ghost g: maze.getGhosts()){
+    		Math.min(mindist, distance(g.GhostPosition, closest));
+    	}
+    	if(minedist < mindist){
+    		if(distance(point,closest) < 48){
+    			return 0;
+    		}
+    		else
+    		{
+    			float d = 1000 - (distance(ghostpoint, point) - distance(maze.getPacMan().getPosition(), point));
+    	    	if(d > 1000)
+    	    		return 0;
+    	    	else
+    	    		return d;
+    		}
+    	}
     	else
-    		return d;
+		{*/
+			float d = 1000 - (distance(ghostpoint, point) - distance(maze.getPacMan().getPosition(), point));
+	    	if(d > 1000)
+	    		return 0;
+	    	else
+	    		return d;
+		//}
     }
     
     private Point targetPoint(Maze maze){
 		Queue<Point> intqueue = new LinkedList<Point>();
 		intqueue.addAll(getIntersections(maze, maze.getPacMan().getPosition()));
 		ArrayList<Point> visited = new ArrayList<Point>();
-		List<List<Float>> utilities = new ArrayList<List<Float>>();
+		Float[][] utilities = new Float[20000][4];
+		for(int i = 0;i<20000;i++){
+			for(int j = 0;j<4;j++){
+				utilities[i][j] = 0.0f;
+			}
+		}
 		ArrayList<Point> targets = new ArrayList<Point>();
 		targets.addAll(intqueue);
 		int i = 0;
 		while(!intqueue.isEmpty()){
-			System.out.println("loop1");
 			Point currentpoint = intqueue.remove();
 			visited.add(currentpoint);
-			utilities.add(new ArrayList<Float>());
 			boolean expand = false;
 			for(int g = 0; g<4 ;g++){
 				float u = utility(maze, currentpoint, maze.getGhosts()[g].GhostPosition);
-				utilities.get(i).add(u);
+				utilities[i][g] = u;
 				if(u > 100000){expand = true;}
 			}
 			if(expand || (intqueue.isEmpty() && i<3)){
@@ -383,17 +426,17 @@ public class Ghost
 		
 		Point[] ghosttargets = new Point[4];
 		for(int g = 0;g<4;g++){
-			float best = Float.MAX_VALUE;
+			float best = 0;
 			int chosen = 0;
 			for(int j = 0;j<targets.size();j++){
-				if(best > utilities.get(j).get(g)){
-					best = utilities.get(j).get(g);
+				if(best < utilities[j][g]){
+					best = utilities[j][g];
 					ghosttargets[g] = targets.get(j);
 					chosen = j;
 				}
 			}
 			for(int p = g; p<4;p++){
-				utilities.get(chosen).set(p, Float.MAX_VALUE);
+				utilities[chosen][p] = 0.0f;
 			}
 		}
 		System.out.println(ghosttargets[0].toString());
@@ -414,14 +457,11 @@ public class Ghost
     
     private ArrayList<Point> getIntersections(Maze maze, Point point){
 		ArrayList<Point> intersections = new ArrayList<Point>();
-    	Maze.Status[][] grid = maze.getMap();
 		Queue<Point> pointqueue = new LinkedList<Point>();
 		pointqueue.add(point);
 		ArrayList<Point> visited = new ArrayList<Point>();
 		while(!pointqueue.isEmpty()){
-			System.out.println("1");
 			Point currentpoint = pointqueue.remove();
-			System.out.println(currentpoint.toString());
 			visited.add(currentpoint);
 			ArrayList<Point> validpaths = new ArrayList<Point>();
 			Point pright = new Point(currentpoint.x+MazeViewer.CELL_SIZE, currentpoint.y);
@@ -441,8 +481,16 @@ public class Ghost
 				intersections.add(currentpoint);
 			}
 			else{
-				validpaths.remove(visited);
-				pointqueue.addAll(validpaths);
+				for(Point p1: validpaths){
+					boolean match = false;
+					for(Point p2: visited){
+						if(p1.x == p2.x && p1.y == p2.y)
+							match = true;
+					}
+					if(!match){pointqueue.add(p1);}
+				}
+				//validpaths.remove(visited);
+				//pointqueue.addAll(validpaths);
 			}
 		}
     	return intersections;
@@ -464,7 +512,7 @@ public class Ghost
         return position;
     }
     
-    private Point offset(Point positioncopy, Orientation ori){
+    /*private Point offset(Point positioncopy, Orientation ori){
         Point position = new Point(positioncopy); //translate copy of point
         int dist = MazeViewer.CELL_SIZE*4; //for offset
         switch (ori){
@@ -478,7 +526,7 @@ public class Ghost
                 position.translate(dist,0); break;
         }
         return position;
-    }
+    }*/
     
     private Orientation[] getOrientations(Maze maze){
         //up down left right
