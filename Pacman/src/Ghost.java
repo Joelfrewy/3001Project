@@ -439,15 +439,17 @@ public class Ghost
 				utilities[chosen][p] = 0.0f;
 			}
 		}
-		System.out.println(ghosttargets[0].toString());
-		System.out.println(ghosttargets[1].toString());
-		System.out.println(ghosttargets[2].toString());
-		System.out.println(ghosttargets[3].toString() + "/n");
+		System.out.println(ghosttargets[0].x/MazeViewer.CELL_SIZE + ", " + ghosttargets[0].y/MazeViewer.CELL_SIZE);
+		System.out.println(ghosttargets[1].x/MazeViewer.CELL_SIZE + ", " + ghosttargets[1].y/MazeViewer.CELL_SIZE);
+		System.out.println(ghosttargets[2].x/MazeViewer.CELL_SIZE + ", " + ghosttargets[2].y/MazeViewer.CELL_SIZE);
+		System.out.println(ghosttargets[3].x/MazeViewer.CELL_SIZE + ", " + ghosttargets[3].y/MazeViewer.CELL_SIZE + "/n");
+		System.out.println(maze.getMap()[1][6] == Maze.Status.ENERGISER);
 		for(int g = 0;g<4;g++){
 			if(maze.getGhosts()[g].equals(this)){
 				return ghosttargets[g];
 			}
 		}
+		maze.drawpos(1, 6);
 		return null;
     }
     
@@ -456,10 +458,12 @@ public class Ghost
     }
     
     private ArrayList<Point> getIntersections(Maze maze, Point point){
+    	
 		ArrayList<Point> intersections = new ArrayList<Point>();
 		Queue<Point> pointqueue = new LinkedList<Point>();
 		pointqueue.add(point);
 		ArrayList<Point> visited = new ArrayList<Point>();
+		int f = 1;
 		while(!pointqueue.isEmpty()){
 			Point currentpoint = pointqueue.remove();
 			visited.add(currentpoint);
@@ -469,30 +473,32 @@ public class Ghost
 			Point pup = new Point(currentpoint.x, currentpoint.y+MazeViewer.CELL_SIZE);
 			Point pdown = new Point(currentpoint.x, currentpoint.y-MazeViewer.CELL_SIZE);
 			
-			if(maze.locationStatus(pleft) != Maze.Status.INVALID)
-				validpaths.add(pleft);
-			if(maze.locationStatus(pright) != Maze.Status.INVALID)
-				validpaths.add(pright);
-			if(maze.locationStatus(pup) != Maze.Status.INVALID)
-				validpaths.add(pup);
-			if(maze.locationStatus(pdown) != Maze.Status.INVALID)
-				validpaths.add(pdown);
+			if(!maze.locationStatus(pleft).equals(Maze.Status.INVALID))
+				{validpaths.add(pleft);
+			System.out.println("add left" + f);}
+			if(!maze.locationStatus(pright).equals(Maze.Status.INVALID))
+				{validpaths.add(pright);
+			System.out.println("add right" + f);}
+			if(!maze.locationStatus(pup).equals(Maze.Status.INVALID))
+				{validpaths.add(pup);
+			System.out.println("add up" + f);}
+			if(!maze.locationStatus(pdown).equals(Maze.Status.INVALID))
+				{validpaths.add(pdown);
+			System.out.println("add down" + f);}
 			if(validpaths.size() > 2 && !currentpoint.equals(point)){
 				intersections.add(currentpoint);
 			}
 			else{
-				for(Point p1: validpaths){
-					boolean match = false;
-					for(Point p2: visited){
-						if(p1.x == p2.x && p1.y == p2.y)
-							match = true;
-					}
-					if(!match){pointqueue.add(p1);}
-				}
-				//validpaths.remove(visited);
-				//pointqueue.addAll(validpaths);
+				validpaths.remove(visited);
+				pointqueue.addAll(validpaths);
 			}
+			f++;
 		}
+		System.out.println("---");
+		for(Point i:intersections){
+			System.out.println(i.x/MazeViewer.CELL_SIZE +", "+ i.y/MazeViewer.CELL_SIZE);
+		}
+		System.out.println("---");
     	return intersections;
     }
     

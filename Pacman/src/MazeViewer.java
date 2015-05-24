@@ -151,7 +151,10 @@ public class MazeViewer
                     
                 }
             }
-                
+            drawpos(0,5);
+            drawpos(2,5);
+            drawpos(1,6);
+            drawpos(1,4);
             eraseGhosts(); //redraw where ghosts were
             erasePacman(); //redraw where pacman was
             drawMazeDots(); //redraw dots
@@ -160,6 +163,7 @@ public class MazeViewer
             pacman.doMove(maze); //move pacman
             
             drawGhosts(); //draw ghosts
+            
             drawPacman(22.5*Math.cos(frame/5)-22.5); //draw pacman
             
             drawScoreText();
@@ -453,6 +457,11 @@ public class MazeViewer
             }
         }
         
+    }
+    
+    public void drawpos(int i, int j){
+    	double bigdotsize = CELL_SIZE/2;
+    	c.fill(new Ellipse2D.Double((i+0.5)*CELL_SIZE-bigdotsize/2, (j+0.5)*CELL_SIZE-bigdotsize/2, bigdotsize, bigdotsize));
     }
     
     private void drawgrid(int i, int j){

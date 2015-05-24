@@ -99,6 +99,10 @@ public class Maze
         pacman = pm;
     }
     
+    public void drawpos(int i, int j){
+    	mazeviewer.drawpos(i, j);
+    }
+    
     public Status[][] getMap(){
         //returns the game map.
         return grid;
