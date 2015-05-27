@@ -343,8 +343,7 @@ public class Ghost
         return position;
     }
     
-    private float utility(Maze maze, Point point, Ghost gh){
-    	Point ghostpoint = gh.GhostPosition;
+    private float utility(Maze maze, Point point, Point ghostpoint){
     	Maze.Status[][] grid = maze.getMap();
     	int width = grid.length;
     	int height = grid[0].length;
@@ -367,13 +366,13 @@ public class Ghost
     		}
     		int mindist = 2000;
     		for(Ghost g: maze.getGhosts()){
-    			Math.min(mindist, ghostDistance(maze, g, closest));
+    			Math.min(mindist, distance(g.GhostPosition, closest));
     		}
     		if((minedist < mindist) && (distance(point,closest) < 128))
     			return 0.0f;
     		else
     		{
-    			float d = 1000 - (ghostDistance(maze, gh, point) - distance(maze.getPacMan().getPosition(), point));
+    			float d = 1000 - (distance(ghostpoint, point) - distance(maze.getPacMan().getPosition(), point));
     			if(d > 1000)
     				return 0.0f;
     			else
@@ -382,7 +381,7 @@ public class Ghost
     	}
     	else
     	{
-    		float d = 1000 - (ghostDistance(maze, gh, point) - distance(maze.getPacMan().getPosition(), point));
+    		float d = 1000 - (distance(ghostpoint, point) - distance(maze.getPacMan().getPosition(), point));
 			if(d > 1000)
 				return 0.0f;
 			else
@@ -408,7 +407,7 @@ public class Ghost
 			visited.add(currentpoint);
 			boolean expand = false;
 			for(int g = 0; g<4 ;g++){
-				float u = utility(maze, currentpoint, maze.getGhosts()[g]);
+				float u = utility(maze, currentpoint, maze.getGhosts()[g].GhostPosition);
 				utilities[i][g] = u;
 				if(u == 0){expand = true;}
 			}
@@ -457,7 +456,8 @@ public class Ghost
     
     private int ghostDistance(Maze maze, Ghost g, Point point){
 		ArrayList<Point> intersections = getIntersections(maze, point);
-    	Point chosen = intersections.get(0);
+    	Orientation i = g.GhostOrientation;
+    	Point chosen;
     	switch(g.GhostOrientation){
     		case UP:
     			int best = 0;
@@ -492,7 +492,7 @@ public class Ghost
     				}
     			}
     	}
-		return distance(g.GhostPosition, chosen) + distance(chosen, point);
+		return GhostSpeed;
     }
     
     private ArrayList<Point> getIntersections(Maze maze, Point point){

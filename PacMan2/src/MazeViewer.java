@@ -71,6 +71,16 @@ public class MazeViewer
         
         ghosts = maze.getGhosts();
         
+        double a1 = Math.random();
+        System.out.println("a1: " + a1);
+        double a2 = Math.random()*2-1;
+        System.out.println("a2: " + a2);
+        //set AI coefficients
+        for(Ghost g:ghosts){
+        	g.a1 = a1;
+        	g.a2 = a2;
+        }
+        
         rows = statusgrid.length;
         cols = statusgrid[0].length;
         
