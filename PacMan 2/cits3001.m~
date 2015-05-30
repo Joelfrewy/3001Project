@@ -12,13 +12,7 @@ m = 1000; % number of trendline points (the larger the smoother)
 %yy = polyval(p, (xx-mu(1))/mu(2));
 
 figure;
-%plot(f, [x,y], O(:, 3));
-plot(f, [x,y], O(:, 3), 'Style', 'contour');
-xlabel('a1')
-ylabel('a2')
-zlabel('Score')
-%colormap('hsv');
-colorbar()
+plot(f, [x,y], O(:, 3), 'Sty');
 %scatter3(O(:, 1), O(:, 2), O(:, 3));
 %plot(xx, yy, 'r-');
 %xlabel('a1');
