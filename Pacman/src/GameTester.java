@@ -9,8 +9,9 @@ import java.awt.Point;
 import java.awt.Color;
 public class GameTester
 {
-
-    public static void main(String[] args){
+	MazeViewer mv;
+	Maze m;
+    public GameTester(){
         boolean[][] map = new boolean[28][36];
         setLegal(map);
                 
@@ -35,6 +36,8 @@ public class GameTester
 
         Maze maze = new Maze(map, noDots,engPos,ghosts, pm);
         MazeViewer gv = new MazeViewer(maze);
+        mv = gv;
+        m = maze;
         
         //You can comment out the line below if you just want to test out the drawings.
         gv.animate();

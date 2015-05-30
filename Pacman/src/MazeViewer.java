@@ -24,6 +24,7 @@ public class MazeViewer
     private int panicStopFrame = 10^100; //frame to stop panic
     private int switchFrame = -1; //frame to switch between chase and scatter
     private boolean gameOver;
+    public boolean end;
     
     java.awt.Point previousPacmanPosition;
     
@@ -34,7 +35,7 @@ public class MazeViewer
         
     private Ghost[] ghosts;
 
-    private Canvas c;
+    public Canvas c;
     private static int[] tilepos;
     public static final int CELL_SIZE = 16; //16 or 32 
     private static final int PACMAN_SIZE = (int) (CELL_SIZE * 1.5); //diameter
@@ -62,7 +63,6 @@ public class MazeViewer
         * Pac-Man and the ghost in their correct positions and orientations. 
         * It also shows the current score and the number of lives left. 
         */
-
         maze = themaze;
         statusgrid = maze.getMap();
         
@@ -70,6 +70,7 @@ public class MazeViewer
         nextOrientation =  pacman.getOrientation();
         
         ghosts = maze.getGhosts();
+        
         
         rows = statusgrid.length;
         cols = statusgrid[0].length;
@@ -172,23 +173,29 @@ public class MazeViewer
     };
     
     public void youWin(){
+    	end = true;
         gameTimer.stop();
         c.setForegroundColour(new java.awt.Color(255,255,255));
         c.drawString("You Win!", (int) (rows*CELL_SIZE/2-CELL_SIZE*3.5), (int) (cols*CELL_SIZE/2)); //high score font
         gameOver = true;
+        
         myDotSound.loop(false);
         new Sounds(Sounds.Sound.MUSIC_INTERMISSION, true);
-        
+        while(AITester.print(ghosts[0].a1, maze.getScore()) == 0){}
+        c.setVisible(false);
     }
     
     public void youLose(){
+    	end = true;
         gameTimer.stop();
         c.setForegroundColour(new java.awt.Color(255,255,255));
         c.drawString("You Lose!", (int) (rows*CELL_SIZE/2-CELL_SIZE*4), (int) (cols*CELL_SIZE/2)); //high score font
         gameOver = true;
+        
         myDotSound.loop(false);
         new Sounds(Sounds.Sound.MUSIC_INTERMISSION, true);
-        
+        while(AITester.print(ghosts[0].a1, maze.getScore()) == 0){}
+        c.setVisible(false);
     }
     
     public void drawScoreText(int score, java.awt.Point position){//external - create new

@@ -1,0 +1,6 @@
+
+public class AITester {
+	public static void main(String[] args){
+		GameTester gt = new GameTester();
+	}
+}

@@ -30,6 +30,8 @@ public class Ghost
     private Point           GhostPosition;
     private Point           OriginalPosition; //to go back home when dead
     
+    double a1;
+    
     //given
     public static enum Mode{CHASE,SCATTER,PANIC};
     public static enum Orientation{UP,DOWN,LEFT,RIGHT};
@@ -369,7 +371,7 @@ public class Ghost
     		for(Ghost g: maze.getGhosts()){
     			Math.min(mindist, ghostDistance(maze, g, closest));
     		}
-    		if((minedist < mindist) && (distance(point,closest) < 128))
+    		if((minedist < mindist) && (distance(point,closest) < a1))
     			return 0.0f;
     		else
     		{
