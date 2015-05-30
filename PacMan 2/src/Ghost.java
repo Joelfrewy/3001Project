@@ -294,6 +294,7 @@ public class Ghost
     		double min = 20000;
     		int mini = 0;
     		int minj = 0;
+    		//choose smallest utility from table
     		for(int i = 0;i<4;i++){
     			for(int j = 0;j<intersections.size();j++){
     				if(min > utilities[i][j]){
@@ -304,6 +305,7 @@ public class Ghost
     			}
     		}
     		allocations[mini] = intersections.get(minj);
+    		//clear allocated ghost and intersection from table
     		for(int i = 0;i<4;i++){
     			utilities[i][minj] = 20000;
     		}
@@ -332,16 +334,18 @@ public class Ghost
     		}
     	}
     	//coefficient sum
-    	double u = a1*d1 + a2*d2;
+    	double u = 0*d1 + 1*d2;
 		return u;
     }
     
     private ArrayList<Point> getIntersections(Maze maze){
 		Maze.Status[][] statuses = maze.getMap();
 		ArrayList<Point> intersections = new ArrayList<Point>();
+		//loop though squares, add intersections to arraylist
 		for(int i = 0;i<statuses[0].length;i++){
 			for(int j = 0;j<statuses.length;j++){
 				if(statuses[j][i] != Maze.Status.DEAD && j!=0 && j!=27){
+					//count number of surrounding paths
 					int path = 0;
 					if(statuses[j+1][i] != Maze.Status.DEAD){
 						path++;
@@ -355,6 +359,7 @@ public class Ghost
 					if(statuses[j][i-1] != Maze.Status.DEAD){
 						path++;
 					}
+					//if paths is 3 or 4 it is an intersection
 					if(path>2){
 						intersections.add(new Point(j*MazeViewer.CELL_SIZE+MazeViewer.CELL_SIZE/2,i*MazeViewer.CELL_SIZE+MazeViewer.CELL_SIZE/2));
 					}
