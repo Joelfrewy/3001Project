@@ -344,13 +344,14 @@ public class Ghost
         }
         return position;
     }
-    
+    // utility function for evaluating intersections
     private float utility(Maze maze, Point point, Ghost gh){
     	Point ghostpoint = gh.GhostPosition;
     	Maze.Status[][] grid = maze.getMap();
     	int width = grid.length;
     	int height = grid[0].length;
     	ArrayList<Point> energisers = new ArrayList<Point>(); 
+    	// finds all the energisers in the maze
     	for(int i = 0; i< width;i++){
     		for(int j = 0; j< height;j++){
         		if(grid[i][j] == Maze.Status.ENERGISER){
@@ -358,6 +359,7 @@ public class Ghost
         		}
         	}
     	}
+    	// finds the closest energiser to pacman
     	if(energisers.size() > 0){
     		Point closest = energisers.get(0);
     		int minedist = 2000;
@@ -368,9 +370,11 @@ public class Ghost
     			}
     		}
     		int mindist = 2000;
+    		//finds the minimum distance of ghosts from the closest energiser
     		for(Ghost g: maze.getGhosts()){
     			Math.min(mindist, ghostDistance(maze, g, closest));
     		}
+    		// if minimum distance of ghosts is greater than pacman and inside of safe distance, utility = 0 
     		if((minedist < mindist) && (distance(point,closest) < a1))
     			return 0.0f;
     		else
@@ -384,6 +388,7 @@ public class Ghost
     	}
     	else
     	{
+    		// set utility to difference between distance from point to pacman and point to ghost
     		float d = 1000 - (ghostDistance(maze, gh, point) - distance(maze.getPacMan().getPosition(), point));
 			if(d > 1000)
 				return 0.0f;
@@ -391,11 +396,12 @@ public class Ghost
 				return d;
     	}
     }
-    
+    // Returns target point for ghost, used as target for move function
     private Point targetPoint(Maze maze){
 		Queue<Point> intqueue = new LinkedList<Point>();
 		intqueue.addAll(getIntersections(maze, maze.getPacMan().getPosition()));
 		ArrayList<Point> visited = new ArrayList<Point>();
+		//creates a utility array and sets values to 0.0f
 		Float[][] utilities = new Float[20000][4];
 		for(int i = 0;i<20000;i++){
 			for(int j = 0;j<4;j++){
@@ -403,17 +409,20 @@ public class Ghost
 			}
 		}
 		ArrayList<Point> targets = new ArrayList<Point>();
+		//starts off with initial intersections and expands those with utility of 0
 		targets.addAll(intqueue);
 		int i = 0;
 		while(!intqueue.isEmpty()){
 			Point currentpoint = intqueue.remove();
 			visited.add(currentpoint);
 			boolean expand = false;
+			// calculates utility of intersection puts it in utility array
 			for(int g = 0; g<4 ;g++){
 				float u = utility(maze, currentpoint, maze.getGhosts()[g]);
 				utilities[i][g] = u;
 				if(u == 0){expand = true;}
 			}
+			//if utility is 0 then expands the intersection, adding it onto the queue
 			if(expand || (intqueue.isEmpty() && i<4)){
 				targets.addAll(getIntersections(maze, currentpoint));
 				intqueue.addAll(targets);
@@ -421,11 +430,12 @@ public class Ghost
 			}
 			i++;
 		}
-		
+		//selects intersection targets for each ghost
 		Point[] ghosttargets = new Point[4];
 		for(int g = 0; g<4; g++){
 			ghosttargets[g] = maze.getPacMan().getPosition();
 		}
+		//maximises utility based on utilities table, so best fit of ghost to bounding intersection
 		for(int g = 0;g<4;g++){
 			float best = 0;
 			int chosen = 0;
@@ -456,7 +466,7 @@ public class Ghost
     private int distance(Point point1, Point point2){
     	return Math.abs(point1.x-point2.x) + Math.abs(point1.y-point2.y);
     }
-    
+    // calculates distance given the ghosts current inertia (distance from ghost to next intersection + ghost to point)
     private int ghostDistance(Maze maze, Ghost g, Point point){
 		ArrayList<Point> intersections = getIntersections(maze, point);
     	Point chosen = intersections.get(0);
@@ -496,7 +506,7 @@ public class Ghost
     	}
 		return distance(g.GhostPosition, chosen) + distance(chosen, point);
     }
-    
+    // Returns the 2 bounding intersections for a non intersection and the 3 or 4 connected intersections for an intersection
     private ArrayList<Point> getIntersections(Maze maze, Point point){
     	//for(int g = 0;g<maze.getMap()[0].length;g++){
     		//for(int a = 0;a<maze.getMap().length;a++){
@@ -504,18 +514,22 @@ public class Ghost
         	//}
     		//System.out.println("");
     	//}
+    	//starts with the point's position and adds it to the queue
     	int[] start = {point.x/MazeViewer.CELL_SIZE, point.y/MazeViewer.CELL_SIZE};
     	Queue<int[]> pointqueue = new LinkedList<int[]>();
     	pointqueue.add(start);
     	Maze.Status[][] statuses = maze.getMap();
+    	// keeps a array for visited points
     	int[][] visited = new int[statuses.length][statuses[0].length];
 		ArrayList<Point> intersections = new ArrayList<Point>();
+		//dequeues and checks if it is an intersection, otherwise continues until reaching an intersection
 		while(!pointqueue.isEmpty() && intersections.size() < 5){
 			int[] current = pointqueue.remove();
 			int x = current[0];
 			int y = current[1];
 			visited[x][y] = 1;
 			int path = 0;
+			//checks left right up down of current point to check if it is an intersection
 			if((x-1)>=0){
 				if(statuses[x-1][y] != Maze.Status.DEAD && visited[x-1][y] != 1){
 					int[] newpoint = {x-1,y};
@@ -544,6 +558,7 @@ public class Ghost
 					path++;
 				}
 			}
+			// if there are more than 2 paths then it is an intersection
 			if(path > 2){
 				intersections.add(new Point(x*MazeViewer.CELL_SIZE + MazeViewer.CELL_SIZE/2,y*MazeViewer.CELL_SIZE+MazeViewer.CELL_SIZE/2));
 			}
